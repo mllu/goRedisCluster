@@ -1,0 +1,32 @@
+
+Note: Download and install redis before running this program, please refer to http://redis.io/download
+
+Prerequisite:
+go get github.com/mediocregopher/radix.v2/cluster
+go get github.com/mediocregopher/radix.v2/redis
+
+Download:
+git clone git@github.com:mllu/redisCluster.git
+
+Directory Tree
+.
+|____conf
+| |____7001
+| |____7002
+| |____7003
+| |____7004
+| |____7005
+| |____7006
+|____lib
+
+1. conf
+  -- config files to set up simple redis cluster
+  usage: run `redis-server CONFIG_FILE` for each subdirectory
+
+2. lib
+  -- go util for level-logging
+  
+To set up cluster by joining master & slave
+  usage:
+      go run redisCluster.go
+
