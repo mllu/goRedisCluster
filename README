@@ -12,16 +12,18 @@ git clone git@github.com:mllu/goRedisCluster.git
 Directory Tree
 .
 |____conf
+| |____7000
 | |____7001
 | |____7002
 | |____7003
 | |____7004
 | |____7005
-| |____7006
 
 1. conf
   -- config files to set up simple redis cluster
   usage: run `redis-server CONFIG_FILE` for each subdirectory
+  or
+  cd conf && ./redis-cluster -s
 
 To set up cluster by joining master & slave
   installation

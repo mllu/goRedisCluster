@@ -1,0 +1,125 @@
+#!/bin/sh
+
+getopt --test > /dev/null
+if [[ $? != 4 ]]; then
+    echo "I’m sorry, `getopt --test` failed in this environment."
+    exit 1
+fi
+
+export SRC=$PWD
+#echo "look up processes under git repo "$SRC
+findproc() {
+  #cmd="ps -ef | grep \$USER | grep -i \$1 | grep -v grep | awk {print \$2}"
+  #echo $cmd
+  cmd=`ps -ef | grep $USER | grep -i $1 | grep -v grep | awk '{print $2}'`
+  echo $cmd
+}
+alias p=findproc
+
+killproc(){
+  echo 'Finging processes ...'
+  pid=`p "$1"`
+  if [[ $pid == "" ]]; then
+    echo "$1 not found"
+    return
+  fi
+  echo "pid: "$pid
+  echo 'KILLING .. '
+  #ps aux | grep $USER | grep -i $1 | grep -v grep | awk '{print "kill -9 " $2}'
+  kill -9 $pid
+  pid=`p "$1"`
+  if [[ $pid != "" ]]; then
+    echo "$1 in $pid still found"
+    return
+  else
+    echo "DONE .. "
+  fi
+}
+alias ka=killproc
+
+show_help() {
+  echo "redis-cluster:"
+  echo "Usage: redis-cluster [-s|--start]"
+  echo "       redis-cluster [-k|--kill]"
+  echo "       redis-cluster [-r|--restart]"
+}
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+
+# arguments to look-up
+SHORT=h\?krs
+LONG=help,kill,restart,start
+
+PARSED=`getopt --options $SHORT --longoptions $LONG --name "$0" -- "$@"`
+if [[ $? != 0 ]]; then
+    exit 2
+fi
+eval set -- "$PARSED"
+
+while true; do
+  case "$1" in
+    -h|\?|--help)
+        show_help
+        exit 0
+        ;;
+    -k|--kill)
+        k=y
+        echo "killing redis-server" 
+        ka redis-server
+        shift
+        break
+        ;;
+    -r|--restart)
+        r=y
+        echo "restarting" 
+        redis-cluster --kill
+        redis-cluster --start
+        shift
+        break
+        ;;
+    -s|--start)
+        s=y
+        echo "starting pageserver" 
+        cd $SRC/conf 
+        echo "7000"
+        cd 7000
+        redis-server redis.conf.7000 &
+        cd -
+        echo "7001"
+        cd 7001
+        redis-server redis.conf.7001 &
+        cd -
+        echo "7002"
+        cd 7002
+        redis-server redis.conf.7002 &
+        cd -
+        echo "7003"
+        cd 7003
+        redis-server redis.conf.7003 &
+        cd -
+        echo "7004"
+        cd 7004
+        redis-server redis.conf.7004 &
+        cd -
+        echo "7005"
+        cd 7005
+        redis-server redis.conf.7005 &
+        cd -
+        shift
+        break
+        ;;
+    *)
+        show_help
+        break
+        ;;
+    --)
+        shift
+        break
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift

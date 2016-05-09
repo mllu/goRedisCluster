@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	rd "github.com/chasex/redis-go-cluster"
+	rd "github.com/Apsalar/redis-go-cluster"
 	"github.com/garyburd/redigo/redis"
 )
 
 const (
-	ADMIN      = "127.0.0.1:7001"
+	ADMIN      = "127.0.0.1:7000"
 	TOTALSLOTS = 16384
 )
 
@@ -57,12 +57,12 @@ func getCluster(connTimeout, readTimeout, writeTimeout time.Duration) *rd.Cluste
 	cluster, err := rd.NewCluster(
 		&rd.Options{
 			StartNodes: []string{
+				"127.0.0.1:7000",
 				"127.0.0.1:7001",
 				"127.0.0.1:7002",
 				"127.0.0.1:7003",
 				"127.0.0.1:7004",
 				"127.0.0.1:7005",
-				"127.0.0.1:7006",
 			},
 			ConnTimeout:  connTimeout,
 			ReadTimeout:  readTimeout,
@@ -83,14 +83,14 @@ func getCluster(connTimeout, readTimeout, writeTimeout time.Duration) *rd.Cluste
 func loadClusterInfo() (masters, slaves map[string]*Node) {
 	// load redis-cluster masters&slaves ip/port info
 	masters = map[string]*Node{
+		"127.0.0.1:7000": &Node{"127.0.0.1", "7000", "", ""},
 		"127.0.0.1:7001": &Node{"127.0.0.1", "7001", "", ""},
 		"127.0.0.1:7002": &Node{"127.0.0.1", "7002", "", ""},
-		"127.0.0.1:7003": &Node{"127.0.0.1", "7003", "", ""},
 	}
 	slaves = map[string]*Node{
+		"127.0.0.1:7003": &Node{"127.0.0.1", "7003", "", "127.0.0.1:7000"},
 		"127.0.0.1:7004": &Node{"127.0.0.1", "7004", "", "127.0.0.1:7001"},
 		"127.0.0.1:7005": &Node{"127.0.0.1", "7005", "", "127.0.0.1:7002"},
-		"127.0.0.1:7006": &Node{"127.0.0.1", "7006", "", "127.0.0.1:7003"},
 	}
 	return
 }
